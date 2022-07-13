@@ -21,7 +21,6 @@ public class MapLoader {
                 int green = (pixel >> 8) & 0xff;
                 int blue = pixel & 0xff;
 
-                Block b = null;
                 if (red == 0 && green == 255 && blue == 0) { // Grass
                     blocks[r][c] = new Blocks.Grass(c, r);
                 } else if (red == 0 && green == 0 && blue == 255) { // Water
