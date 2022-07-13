@@ -15,13 +15,16 @@ public class Main extends JPanel {
    private boolean muted = false;
    private Clip bgClip;
 
+   public static final int FRAME_WIDTH = 800;
+   public static final int FRAME_HEIGHT = 600;
+
    public Main() {
-      img = new BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB);
+      img = new BufferedImage(FRAME_WIDTH, FRAME_HEIGHT, BufferedImage.TYPE_INT_ARGB);
       g2d = (Graphics2D) img.getGraphics();
 
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-      setPreferredSize(new Dimension(800, 600));
+      setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
       setBackground(Color.BLACK);
       setFocusable(true);
       requestFocus();
@@ -103,6 +106,10 @@ public class Main extends JPanel {
       return Math.max(min, Math.min(max, value));
    }
 
+   private double clamp(double value, double min, double max) {
+      return Math.max(min, Math.min(max, value));
+   }
+
    private static Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
          0, new float[] { 10 }, 0);
 
@@ -113,8 +120,8 @@ public class Main extends JPanel {
       // Calculate seen tiles
       int startX = (int) Math.floor(renderOffset.x / Block.TILE_SIZE) - 1;
       int startY = (int) Math.floor(renderOffset.y / Block.TILE_SIZE) - 1;
-      int endX = (int) Math.ceil((renderOffset.x + getWidth()) / Block.TILE_SIZE) + 2;
-      int endY = (int) Math.ceil((renderOffset.y + getHeight()) / Block.TILE_SIZE) + 3;
+      int endX = (int) Math.ceil((renderOffset.x + FRAME_WIDTH) / Block.TILE_SIZE) + 2;
+      int endY = (int) Math.ceil((renderOffset.y + FRAME_HEIGHT) / Block.TILE_SIZE) + 3;
 
       startX = clamp(startX, 0, map[0].length);
       startY = clamp(startY, 0, map.length);
@@ -142,7 +149,7 @@ public class Main extends JPanel {
          drawMap(g2d, getRenderOffset());
 
          player.tick();
-         player.draw(g2d, img.getWidth() / 2, img.getHeight() / 2);
+         player.draw(g2d, getRenderOffset());
          repaint();
       }
    }
@@ -153,8 +160,9 @@ public class Main extends JPanel {
    }
 
    public DimensionsD getRenderOffset() {
-      return new DimensionsD(player.getX() * Block.TILE_SIZE,
-            player.getY() * Block.TILE_SIZE);
+      return new DimensionsD(
+            clamp(player.getX() * Block.TILE_SIZE, FRAME_WIDTH / 2, map[0].length * Block.TILE_SIZE - FRAME_WIDTH),
+            clamp(player.getY() * Block.TILE_SIZE, FRAME_HEIGHT / 2, map.length * Block.TILE_SIZE - FRAME_HEIGHT));
    }
 
    public static class DimensionsD {

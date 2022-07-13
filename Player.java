@@ -327,8 +327,8 @@ public class Player {
     }
 
     public Dimension getCraftingSlotFromMouse(int x, int y) {
-        int startX = main.getWidth() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2 - 10;
-        int startY = main.getHeight() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2 - 10;
+        int startX = Main.FRAME_WIDTH / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2 - 10;
+        int startY = Main.FRAME_HEIGHT / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2 - 10;
 
         int slotX = (x - startX) / (INVENTORY_SLOT_SIZE + 20);
         int slotY = (y - startY) / (INVENTORY_SLOT_SIZE + 20);
@@ -341,8 +341,8 @@ public class Player {
     }
 
     public int getSlotFromMouse(int x, int y) {
-        int startX = main.getWidth() / 2 - (INVENTORY_SLOT_SIZE + 20) * inventory.size / 2 + 20;
-        int startY = main.getHeight() - INVENTORY_SLOT_SIZE - 30;
+        int startX = Main.FRAME_WIDTH / 2 - (INVENTORY_SLOT_SIZE + 20) * inventory.size / 2 + 20;
+        int startY = Main.FRAME_HEIGHT - INVENTORY_SLOT_SIZE - 30;
 
         int slotX = (x - startX) / (INVENTORY_SLOT_SIZE + 20);
         int slotY = (y - startY) / (INVENTORY_SLOT_SIZE + 20);
@@ -375,7 +375,9 @@ public class Player {
         return selectedBlock;
     }
 
-    public void draw(Graphics2D g2d, int xOffset, int yOffset) {
+    public void draw(Graphics2D g2d, Main.DimensionsD offset) {
+        int xOffset = (int) offset.x;
+        int yOffset = (int) offset.y;
         drawPlayer(g2d, xOffset, yOffset);
 
         drawInventory(g2d);
@@ -391,8 +393,8 @@ public class Player {
     private int tick = 0;
 
     public void drawPlayer(Graphics2D g2d, int xOffset, int yOffset) {
-        int x = xOffset - WIDTH / 2;
-        int y = yOffset;
+        int x = (int) (this.x * Block.TILE_SIZE) - xOffset + Main.FRAME_WIDTH / 2;
+        int y = (int) (this.y * Block.TILE_SIZE) - yOffset + Main.FRAME_HEIGHT / 2;
 
         int tileX = direction == Direction.NONE ? 0 : tick / 8 % 4;
         int tileY;
@@ -422,8 +424,8 @@ public class Player {
     private static final Font INVENTORY_FONT = new Font("Monospaced", Font.BOLD, 20);
 
     private boolean getMouseIsHoveringCraftingResult(int mouseX, int mouseY) {
-        int startX = main.getWidth() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
-        int startY = main.getHeight() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
+        int startX = Main.FRAME_WIDTH / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
+        int startY = Main.FRAME_HEIGHT / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
 
         return (mouseX >= startX + INVENTORY_SLOT_SIZE + 10 && mouseY >= startY + (INVENTORY_SLOT_SIZE + 20) * 3 + 10 &&
                 mouseX <= startX + 2 * INVENTORY_SLOT_SIZE + 30
@@ -431,8 +433,8 @@ public class Player {
     }
 
     public void drawCraftingGrid(Graphics2D g2d) {
-        int startX = main.getWidth() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
-        int startY = main.getHeight() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
+        int startX = Main.FRAME_WIDTH / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
+        int startY = Main.FRAME_HEIGHT / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
 
         g2d.setColor(new Color(0, 0, 0, 0.5f));
         g2d.fillRect(startX - 10, startY - 10, (INVENTORY_SLOT_SIZE + 20) * 3, (INVENTORY_SLOT_SIZE + 20) * 3);
@@ -462,8 +464,8 @@ public class Player {
     }
 
     public void drawInventory(Graphics2D g2d) {
-        int startX = main.getWidth() / 2 - (INVENTORY_SLOT_SIZE + 20) * inventory.size / 2 + 20;
-        int startY = main.getHeight() - INVENTORY_SLOT_SIZE - 30;
+        int startX = Main.FRAME_WIDTH / 2 - (INVENTORY_SLOT_SIZE + 20) * inventory.size / 2 + 20;
+        int startY = Main.FRAME_HEIGHT - INVENTORY_SLOT_SIZE - 30;
 
         g2d.setColor(new Color(0, 0, 0, 0.5f));
         g2d.fillRect(startX - 10, startY - 10, (INVENTORY_SLOT_SIZE + 20) * inventory.size,
@@ -493,7 +495,7 @@ public class Player {
     }
 
     private static final DecimalFormat DF = new DecimalFormat("#.##");
-    private static Font DEBUG_FONT = new Font("Monospaced", Font.PLAIN, 15);
+    private static final Font DEBUG_FONT = new Font("Monospaced", Font.PLAIN, 15);
 
     public void drawDebug(Graphics2D g2d) {
         g2d.setColor(Color.BLACK);
