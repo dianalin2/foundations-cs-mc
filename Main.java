@@ -99,13 +99,29 @@ public class Main extends JPanel {
       map[y][x] = block;
    }
 
+   private int clamp(int value, int min, int max) {
+      return Math.max(min, Math.min(max, value));
+   }
+
    private void drawMap(Graphics2D g2d, DimensionsD renderOffset) {
       g2d.setColor(Color.BLACK);
       g2d.fillRect(0, 0, img.getWidth(), img.getHeight());
-      for (int i = 0; i < map.length; i++) {
-         for (int j = 0; j < map[i].length; j++) {
+
+      // Calculate seen tiles
+      int startX = (int) Math.floor(renderOffset.x / Block.TILE_SIZE) - 1;
+      int startY = (int) Math.floor(renderOffset.y / Block.TILE_SIZE) - 1;
+      int endX = (int) Math.ceil((renderOffset.x + getWidth()) / Block.TILE_SIZE) + 2;
+      int endY = (int) Math.ceil((renderOffset.y + getHeight()) / Block.TILE_SIZE) + 3;
+
+      startX = clamp(startX, 0, map[0].length);
+      startY = clamp(startY, 0, map.length);
+      endX = clamp(endX, 0, map[0].length);
+      endY = clamp(endY, 0, map.length);
+
+      for (int i = startY; i < endY; i++) {
+         for (int j = startX; j < endX; j++) {
             if (map[i][j] != null)
-               map[i][j].draw(g2d, renderOffset.x, renderOffset.y);
+               map[i][j].draw(g2d, renderOffset.x, renderOffset.y, map);
          }
       }
 

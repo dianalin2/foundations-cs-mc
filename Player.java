@@ -360,6 +360,8 @@ public class Player {
     }
 
     public void tick() {
+        tick++;
+
         move(direction);
 
         if (lastAbsoluteX != -1)
@@ -371,10 +373,7 @@ public class Player {
     }
 
     public void draw(Graphics2D g2d, int xOffset, int yOffset) {
-        if (!isCrafting) {
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(xOffset - WIDTH / 2, yOffset, WIDTH, HEIGHT);
-        }
+        drawPlayer(g2d, xOffset, yOffset);
 
         drawInventory(g2d);
 
@@ -384,6 +383,37 @@ public class Player {
 
         if (debug)
             drawDebug(g2d);
+    }
+
+    private int tick = 0;
+
+    public void drawPlayer(Graphics2D g2d, int xOffset, int yOffset) {
+        int x = xOffset - WIDTH / 2;
+        int y = yOffset;
+
+        int tileX = direction == Direction.NONE ? 0 : tick / 8 % 4;
+        int tileY;
+
+        switch (direction) {
+            case UP:
+                tileY = 4;
+                break;
+            case DOWN:
+                tileY = 0;
+                break;
+            case LEFT:
+                tileY = 6;
+                break;
+            case RIGHT:
+                tileY = 2;
+                break;
+            default:
+                tileY = 0;
+                break;
+        }
+
+        g2d.drawImage(TextureAtlas.characterTextures.getTile(tileX, tileY + 1), x, y, WIDTH, HEIGHT / 2, null);
+        g2d.drawImage(TextureAtlas.characterTextures.getTile(tileX, tileY), x, y - HEIGHT / 2, WIDTH, HEIGHT / 2, null);
     }
 
     private static final Font INVENTORY_FONT = new Font("Monospaced", Font.BOLD, 20);
@@ -421,10 +451,10 @@ public class Player {
         }
 
         if (craftingSlotMouseSelected != null) {
-            g2d.setColor(Color.RED);
-            g2d.drawRect(startX + craftingSlotMouseSelected.width * (INVENTORY_SLOT_SIZE + 20) - 10,
-                    startY + craftingSlotMouseSelected.height * (INVENTORY_SLOT_SIZE + 20) - 10,
-                    INVENTORY_SLOT_SIZE + 20, INVENTORY_SLOT_SIZE + 20);
+            g2d.setColor(Color.WHITE);
+            g2d.drawRect(startX + craftingSlotMouseSelected.width * (INVENTORY_SLOT_SIZE + 20),
+                    startY + craftingSlotMouseSelected.height * (INVENTORY_SLOT_SIZE + 20),
+                    INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE);
         }
     }
 
@@ -453,7 +483,7 @@ public class Player {
         }
 
         if (inventorySlotMouseSelected != -1) {
-            g2d.setColor(Color.RED);
+            g2d.setColor(Color.WHITE);
             g2d.drawRect(startX + inventorySlotMouseSelected * (INVENTORY_SLOT_SIZE + 20), startY,
                     INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE);
         }

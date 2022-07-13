@@ -4,7 +4,7 @@ public class Items {
     public static class GoldBlock extends Item {
 
         public GoldBlock() {
-            super("Gold Block");
+            super("Gold");
         }
 
         @Override
@@ -15,8 +15,9 @@ public class Items {
 
         @Override
         public void draw(Graphics2D g2d, int x, int y) {
-            g2d.setColor(Color.YELLOW.brighter());
-            g2d.fillRect(x, y, Player.INVENTORY_SLOT_SIZE, Player.INVENTORY_SLOT_SIZE);
+            g2d.drawImage(TextureAtlas.objectTextures.getTile(0, 5), x, y, Player.INVENTORY_SLOT_SIZE,
+                    Player.INVENTORY_SLOT_SIZE,
+                    null);
         }
     }
 
@@ -34,8 +35,9 @@ public class Items {
 
         @Override
         public void draw(Graphics2D g2d, int x, int y) {
-            g2d.setColor(Color.GRAY);
-            g2d.fillRect(x, y, Player.INVENTORY_SLOT_SIZE, Player.INVENTORY_SLOT_SIZE);
+            g2d.drawImage(TextureAtlas.caveTextures.getTile(5, 4), x, y, Player.INVENTORY_SLOT_SIZE,
+                    Player.INVENTORY_SLOT_SIZE,
+                    null);
         }
     }
 
@@ -53,20 +55,16 @@ public class Items {
 
         @Override
         public void draw(Graphics2D g2d, int x, int y) {
-            g2d.setColor(Color.ORANGE.darker().darker());
-            g2d.fillRect(x + Player.INVENTORY_SLOT_SIZE / 3, y + Player.INVENTORY_SLOT_SIZE / 3 * 2,
-                    Player.INVENTORY_SLOT_SIZE / 3, Player.INVENTORY_SLOT_SIZE / 3);
-
-            g2d.setColor(Color.GREEN.darker().darker());
-            g2d.fillPolygon(new int[] { x + Player.INVENTORY_SLOT_SIZE / 2, x, x + Player.INVENTORY_SLOT_SIZE },
-                    new int[] { y, y + Player.INVENTORY_SLOT_SIZE / 3 * 2, y + Player.INVENTORY_SLOT_SIZE / 3 * 2 }, 3);
+            g2d.drawImage(TextureAtlas.overworldTextures.getTile(2, 14), x, y, Player.INVENTORY_SLOT_SIZE,
+                    Player.INVENTORY_SLOT_SIZE,
+                    null);
         }
     }
 
     public static class IronBlock extends Item {
 
         public IronBlock() {
-            super("Iron Block");
+            super("Iron");
         }
 
         @Override
@@ -77,8 +75,9 @@ public class Items {
 
         @Override
         public void draw(Graphics2D g2d, int x, int y) {
-            g2d.setColor(Color.GRAY.brighter());
-            g2d.fillRect(x, y, Player.INVENTORY_SLOT_SIZE, Player.INVENTORY_SLOT_SIZE);
+            g2d.drawImage(TextureAtlas.objectTextures.getTile(16, 1), x, y, Player.INVENTORY_SLOT_SIZE,
+                    Player.INVENTORY_SLOT_SIZE,
+                    null);
         }
     }
 

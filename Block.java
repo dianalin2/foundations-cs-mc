@@ -5,7 +5,7 @@ public abstract class Block {
 
     public abstract void tick();
 
-    public abstract void draw(Graphics2D g2d, double xOffset, double yOffset);
+    public abstract void draw(Graphics2D g2d, double xOffset, double yOffset, Block[][] map);
 
     private boolean isSolid = true;
     private boolean isMinable = false;
