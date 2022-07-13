@@ -506,11 +506,6 @@ public class Player {
         g2d.drawString("Selected Slot: " + selectedSlot, 10, 88);
     }
 
-    // public void drawOtherHUD(Graphics2D g2d, int xOffset, int yOffset) {
-    // g2d.setColor(Color.BLACK);
-    // g2d.drawString(", x, y);
-    // }
-
     public double getX() {
         return x;
     }
