@@ -17,6 +17,10 @@ public class TextureAtlas {
             "images/character.png",
             16, 16);
 
+    public static final TextureAtlas innerTextures = SpriteLoader.loadTextureAtlas(
+            "images/Inner.png",
+            16, 16);
+
     BufferedImage image;
 
     BufferedImage[][] textures;

@@ -103,6 +103,9 @@ public class Main extends JPanel {
       return Math.max(min, Math.min(max, value));
    }
 
+   private static Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+         0, new float[] { 10 }, 0);
+
    private void drawMap(Graphics2D g2d, DimensionsD renderOffset) {
       g2d.setColor(Color.BLACK);
       g2d.fillRect(0, 0, img.getWidth(), img.getHeight());
@@ -126,7 +129,7 @@ public class Main extends JPanel {
       }
 
       if (player.getSelectedBlock() != null) {
-         g2d.setStroke(new BasicStroke(5));
+         g2d.setStroke(dashed);
          g2d.setColor(Color.WHITE);
          g2d.drawRect(player.getSelectedBlock().getX() * Block.TILE_SIZE - (int) renderOffset.x,
                player.getSelectedBlock().getY() * Block.TILE_SIZE - (int) renderOffset.y, Block.TILE_SIZE,

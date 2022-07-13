@@ -146,4 +146,21 @@ public class Blocks {
                     getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
         }
     }
+
+    public static class WoodenPlank extends Block {
+        public WoodenPlank(int x, int y) {
+            super(x, y, Items.WoodenPlank.class);
+
+            setSolid(true);
+            setMinable(true);
+        }
+
+        public void tick() {
+        }
+
+        public void draw(Graphics2D g2d, double xOffset, double yOffset, Block[][] map) {
+            g2d.drawImage(TextureAtlas.innerTextures.getTile(0, 1), getX() * TILE_SIZE - (int) xOffset,
+                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
+        }
+    }
 }

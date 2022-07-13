@@ -90,13 +90,14 @@ public class Items {
         @Override
         public void use(int x, int y, Player player) {
             player.removeItemFromInventory();
-            // player.placeBlock(x, y, new Blocks.WoodenPlank(x, y));
+            player.placeBlock(x, y, new Blocks.WoodenPlank(x, y));
         }
 
         @Override
         public void draw(Graphics2D g2d, int x, int y) {
-            g2d.setColor(Color.ORANGE.darker().darker());
-            g2d.fillRect(x, y, Player.INVENTORY_SLOT_SIZE, Player.INVENTORY_SLOT_SIZE);
+            g2d.drawImage(TextureAtlas.innerTextures.getTile(0, 1), x, y, Player.INVENTORY_SLOT_SIZE,
+                    Player.INVENTORY_SLOT_SIZE,
+                    null);
         }
     }
 
@@ -114,7 +115,13 @@ public class Items {
         @Override
         public void draw(Graphics2D g2d, int x, int y) {
             g2d.setColor(Color.GRAY.brighter());
-            g2d.fillRect(x, y, Player.INVENTORY_SLOT_SIZE, Player.INVENTORY_SLOT_SIZE);
+            g2d.fillRect(x + Player.INVENTORY_SLOT_SIZE * 2 / 5, y, Player.INVENTORY_SLOT_SIZE / 5,
+                    Player.INVENTORY_SLOT_SIZE * 3 / 4);
+            g2d.setColor(Color.ORANGE.darker().darker());
+            g2d.fillRect(x + Player.INVENTORY_SLOT_SIZE / 3, y + Player.INVENTORY_SLOT_SIZE * 3 / 4,
+                    Player.INVENTORY_SLOT_SIZE / 3, Player.INVENTORY_SLOT_SIZE / 4);
+            g2d.fillRect(x, y + Player.INVENTORY_SLOT_SIZE * 3 / 5, Player.INVENTORY_SLOT_SIZE,
+                    Player.INVENTORY_SLOT_SIZE / 6);
         }
     }
 }
