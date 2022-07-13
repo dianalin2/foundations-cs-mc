@@ -224,6 +224,9 @@ public class Player {
                     if (getDirection() == Direction.RIGHT)
                         setDirection(Direction.NONE);
                     break;
+                case KeyEvent.VK_L:
+                    MapLoader.saveMap("map.png", main.getMap());
+                    break;
             }
         }
     }
