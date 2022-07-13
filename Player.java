@@ -1,33 +1,87 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
-import java.util.*;
 
 public class Player {
 
-    private Item[] inventory = new Item[10];
+    private Item[][] craftingGrid = new Item[CraftingRecipe.RECIPE_SIZE][CraftingRecipe.RECIPE_SIZE];
+    private boolean isCrafting = false;
+
+    public static final int INVENTORY_SIZE = 10;
+
+    private Inventory inventory = new Inventory(INVENTORY_SIZE);
     private int selectedSlot = 0;
 
     public void removeItemFromInventory(int index) {
-        inventory[index] = null;
+        inventory.removeItemFromInventory(index);
     }
 
     public void removeItemFromInventory() {
-        inventory[selectedSlot] = null;
+        inventory.removeItemFromInventory(selectedSlot);
     }
 
     public boolean pickup(Block block) {
-        for (int i = 0; i < inventory.length; i++) {
-            if (inventory[i] == null) {
-                inventory[i] = block.getItem();
-                Main.playAudio("audio/mine.wav", 0);
-                return true;
+        int emptySlot = inventory.getEmptySlot();
+
+        if (emptySlot == -1)
+            return false;
+
+        try {
+            inventory.setSlot(emptySlot, block.getItemClass().newInstance());
+            Main.playAudio("audio/mine.wav", 0);
+            return true;
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void swapInventoryCraftingGrid(int r, int c, int slot) {
+        Item temp = inventory.getSlot(slot);
+        inventory.setSlot(slot, craftingGrid[r][c]);
+        craftingGrid[r][c] = temp;
+    }
+
+    public void swapCraftingGrid(int r1, int c1, int r2, int c2) {
+        Item temp = craftingGrid[r1][c1];
+        craftingGrid[r1][c1] = craftingGrid[r2][c2];
+        craftingGrid[r2][c2] = temp;
+    }
+
+    public void closeCraftingGrid() {
+        for (int i = 0; i < craftingGrid.length; i++) {
+            for (int j = 0; j < craftingGrid[i].length; j++) {
+                if (craftingGrid[i][j] != null) {
+                    int emptySlot = inventory.getEmptySlot();
+                    if (emptySlot != -1) {
+                        inventory.setSlot(emptySlot, craftingGrid[i][j]);
+                    }
+                    craftingGrid[i][j] = null;
+                    break;
+                }
             }
+        }
+    }
+
+    public boolean craft(CraftingRecipe recipe) {
+        if (recipe.matches(craftingGrid)) {
+            int emptySlot = inventory.getEmptySlot();
+            if (emptySlot == -1)
+                return false;
+
+            inventory.setSlot(emptySlot, recipe.createResult());
+
+            for (int i = 0; i < craftingGrid.length; i++) {
+                for (int j = 0; j < craftingGrid[i].length; j++) {
+                    craftingGrid[i][j] = null;
+                }
+            }
+            // Main.playAudio("audio/craft.wav", 0);
+            return true;
         }
 
         return false;
     }
-
 
     public static final int INVENTORY_SLOT_SIZE = 30;
 
@@ -39,7 +93,7 @@ public class Player {
     private Block selectedBlock;
 
     private boolean debug = false;
-    
+
     public static enum Direction {
         UP, DOWN, LEFT, RIGHT, NONE
     }
@@ -82,11 +136,11 @@ public class Player {
                 selectedSlot--;
 
                 if (selectedSlot < 0)
-                    selectedSlot = inventory.length - 1;
+                    selectedSlot = inventory.size - 1;
             } else {
                 selectedSlot++;
 
-                if (selectedSlot >= inventory.length)
+                if (selectedSlot >= inventory.size)
                     selectedSlot = 0;
             }
         }
@@ -141,6 +195,14 @@ public class Player {
                 case KeyEvent.VK_0:
                     selectedSlot = 9;
                     break;
+                case KeyEvent.VK_C:
+                    if (isCrafting) {
+                        closeCraftingGrid();
+                        isCrafting = false;
+                    } else {
+                        isCrafting = true;
+                    }
+                    break;
             }
         }
 
@@ -184,16 +246,108 @@ public class Player {
         }
     }
 
+    private int inventorySlotMouseSelected = -1;
+    private Dimension craftingSlotMouseSelected = null;
+
     public class PlayerMouseListener extends MouseAdapter {
 
         public void mousePressed(MouseEvent e) {
-            setSelectedBlock(e.getX(), e.getY());
+            if (!isCrafting)
+                setSelectedBlock(e.getX(), e.getY());
+
             if (e.getButton() == MouseEvent.BUTTON3) {
-                if (inventory[selectedSlot] != null)
-                    inventory[selectedSlot].use(selectedBlock.getX(), selectedBlock.getY(), Player.this);
+                if (!isCrafting && inventory.getSlot(selectedSlot) != null) {
+                    inventory.getSlot(selectedSlot).use(selectedBlock.getX(), selectedBlock.getY(), Player.this);
+                }
             } else if (e.getButton() == MouseEvent.BUTTON1) {
-                selectedBlock.mine(Player.this);
+                if (isCrafting) {
+                    int slot = getSlotFromMouse(e.getX(), e.getY());
+                    System.out.println("Slot: " + slot);
+                    if (slot != -1) {
+                        inventorySlotMouseSelected = slot;
+                    } else {
+                        Dimension cSlot = getCraftingSlotFromMouse(e.getX(), e.getY());
+                        System.out.println("Crafting slot: " + cSlot);
+                        if (cSlot != null) {
+                            craftingSlotMouseSelected = cSlot;
+                        }
+                    }
+                } else {
+                    selectedBlock.mine(Player.this);
+                }
             }
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                if (isCrafting) {
+                    int slot = getSlotFromMouse(e.getX(), e.getY());
+                    System.out.println("slot: " + slot);
+                    if (craftingSlotMouseSelected != null && slot != -1) {
+                        swapInventoryCraftingGrid(craftingSlotMouseSelected.height, craftingSlotMouseSelected.width,
+                                slot);
+                        clearCraftingMoveSelection();
+                    } else if (inventorySlotMouseSelected != -1 && slot != -1) {
+                        inventory.swapSlots(inventorySlotMouseSelected, slot);
+                        clearCraftingMoveSelection();
+                    } else {
+                        Dimension cSlot = getCraftingSlotFromMouse(e.getX(), e.getY());
+                        System.out.println("Crafting slot: " + cSlot);
+                        System.out.println("Inventory slot: " + inventorySlotMouseSelected);
+                        if (inventorySlotMouseSelected != -1 && cSlot != null) {
+                            swapInventoryCraftingGrid(cSlot.height, cSlot.width,
+                                    inventorySlotMouseSelected);
+                            clearCraftingMoveSelection();
+                        } else if (craftingSlotMouseSelected != null && cSlot != null) {
+                            swapCraftingGrid(cSlot.height, cSlot.width, craftingSlotMouseSelected.height,
+                                    craftingSlotMouseSelected.width);
+                            clearCraftingMoveSelection();
+                        }
+                    }
+
+                    boolean hover = getMouseIsHoveringCraftingResult(e.getX(), e.getY());
+                    System.out.println("hover: " + hover);
+                    if (hover) {
+                        CraftingRecipe recipe = CraftingRecipe.getMatch(craftingGrid);
+                        if (recipe != null) {
+                            craft(recipe);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void clearCraftingMoveSelection() {
+            inventorySlotMouseSelected = -1;
+            craftingSlotMouseSelected = null;
+        }
+    }
+
+    public Dimension getCraftingSlotFromMouse(int x, int y) {
+        int startX = main.getWidth() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2 - 10;
+        int startY = main.getHeight() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2 - 10;
+
+        int slotX = (x - startX) / (INVENTORY_SLOT_SIZE + 20);
+        int slotY = (y - startY) / (INVENTORY_SLOT_SIZE + 20);
+
+        if (slotX >= 0 && slotX < craftingGrid[0].length && slotY >= 0 && slotY < craftingGrid.length) {
+            return new Dimension(slotX, slotY);
+        } else {
+            return null;
+        }
+    }
+
+    public int getSlotFromMouse(int x, int y) {
+        int startX = main.getWidth() / 2 - (INVENTORY_SLOT_SIZE + 20) * inventory.size / 2 + 20;
+        int startY = main.getHeight() - INVENTORY_SLOT_SIZE - 30;
+
+        int slotX = (x - startX) / (INVENTORY_SLOT_SIZE + 20);
+        int slotY = (y - startY) / (INVENTORY_SLOT_SIZE + 20);
+
+        if (slotX >= 0 && slotX < inventory.size && slotY == 0) {
+            return slotX;
+        } else {
+            return -1;
         }
     }
 
@@ -217,10 +371,16 @@ public class Player {
     }
 
     public void draw(Graphics2D g2d, int xOffset, int yOffset) {
-        g2d.setColor(Color.BLACK);
-        g2d.fillRect(xOffset - WIDTH / 2, yOffset, WIDTH, HEIGHT);
+        if (!isCrafting) {
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(xOffset - WIDTH / 2, yOffset, WIDTH, HEIGHT);
+        }
 
         drawInventory(g2d);
+
+        if (isCrafting) {
+            drawCraftingGrid(g2d);
+        }
 
         if (debug)
             drawDebug(g2d);
@@ -228,28 +388,74 @@ public class Player {
 
     private static final Font INVENTORY_FONT = new Font("Monospaced", Font.BOLD, 20);
 
+    private boolean getMouseIsHoveringCraftingResult(int mouseX, int mouseY) {
+        int startX = main.getWidth() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
+        int startY = main.getHeight() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
+
+        return (mouseX >= startX + INVENTORY_SLOT_SIZE + 10 && mouseY >= startY + (INVENTORY_SLOT_SIZE + 20) * 3 + 10 &&
+                mouseX <= startX + 2 * INVENTORY_SLOT_SIZE + 30
+                && mouseY <= startY + (INVENTORY_SLOT_SIZE + 20) * 4 + 10);
+    }
+
+    public void drawCraftingGrid(Graphics2D g2d) {
+        int startX = main.getWidth() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
+        int startY = main.getHeight() / 2 - ((INVENTORY_SLOT_SIZE + 20) * 3) / 2;
+
+        g2d.setColor(new Color(0, 0, 0, 0.5f));
+        g2d.fillRect(startX - 10, startY - 10, (INVENTORY_SLOT_SIZE + 20) * 3, (INVENTORY_SLOT_SIZE + 20) * 3);
+
+        g2d.fillRect(startX + INVENTORY_SLOT_SIZE + 10, startY + (INVENTORY_SLOT_SIZE + 20) * 3 + 10,
+                INVENTORY_SLOT_SIZE + 20, INVENTORY_SLOT_SIZE + 20);
+
+        CraftingRecipe match = CraftingRecipe.getMatch(craftingGrid);
+        if (match != null)
+            match.drawResult(g2d, startX + INVENTORY_SLOT_SIZE + 20, startY + (INVENTORY_SLOT_SIZE + 20) * 3 + 20);
+
+        for (int r = 0; r < craftingGrid.length; r++) {
+            for (int c = 0; c < craftingGrid[0].length; c++) {
+                if (craftingGrid[r][c] != null) {
+                    craftingGrid[r][c].draw(g2d, startX + c * (INVENTORY_SLOT_SIZE + 20),
+                            startY + r * (INVENTORY_SLOT_SIZE + 20));
+                }
+            }
+        }
+
+        if (craftingSlotMouseSelected != null) {
+            g2d.setColor(Color.RED);
+            g2d.drawRect(startX + craftingSlotMouseSelected.width * (INVENTORY_SLOT_SIZE + 20) - 10,
+                    startY + craftingSlotMouseSelected.height * (INVENTORY_SLOT_SIZE + 20) - 10,
+                    INVENTORY_SLOT_SIZE + 20, INVENTORY_SLOT_SIZE + 20);
+        }
+    }
+
     public void drawInventory(Graphics2D g2d) {
-        int startX = main.getWidth() / 2 - (INVENTORY_SLOT_SIZE + 20) * inventory.length / 2 + 20;
+        int startX = main.getWidth() / 2 - (INVENTORY_SLOT_SIZE + 20) * inventory.size / 2 + 20;
         int startY = main.getHeight() - INVENTORY_SLOT_SIZE - 30;
 
         g2d.setColor(new Color(0, 0, 0, 0.5f));
-        g2d.fillRect(startX - 10, startY - 10, (INVENTORY_SLOT_SIZE + 20) * inventory.length,
+        g2d.fillRect(startX - 10, startY - 10, (INVENTORY_SLOT_SIZE + 20) * inventory.size,
                 INVENTORY_SLOT_SIZE + 20);
 
         g2d.fillRect(startX - 10 + selectedSlot * (INVENTORY_SLOT_SIZE + 20), startY - 10,
                 INVENTORY_SLOT_SIZE + 20, INVENTORY_SLOT_SIZE + 20);
 
-        for (int i = 0; i < inventory.length; i++) {
-            if (inventory[i] != null) {
-                inventory[i].draw(g2d, startX + i * (Player.INVENTORY_SLOT_SIZE + 20), startY);
+        for (int i = 0; i < inventory.size; i++) {
+            if (!inventory.isEmpty(i)) {
+                inventory.getSlot(i).draw(g2d, startX + i * (Player.INVENTORY_SLOT_SIZE + 20), startY);
             }
         }
 
-        if (selectedSlot >= 0 && selectedSlot < inventory.length && inventory[selectedSlot] != null) {
+        if (selectedSlot >= 0 && selectedSlot < inventory.size && !inventory.isEmpty(selectedSlot)) {
             g2d.setColor(Color.BLACK);
             g2d.setFont(INVENTORY_FONT);
-            g2d.drawString(inventory[selectedSlot].getName(),
-                    startX - 10 + (INVENTORY_SLOT_SIZE + 20) * inventory.length / 2 - 50, startY - 30);
+            g2d.drawString(inventory.getSlot(selectedSlot).getName(),
+                    startX - 10 + (INVENTORY_SLOT_SIZE + 20) * inventory.size / 2 - 50, startY - 30);
+        }
+
+        if (inventorySlotMouseSelected != -1) {
+            g2d.setColor(Color.RED);
+            g2d.drawRect(startX + inventorySlotMouseSelected * (INVENTORY_SLOT_SIZE + 20), startY,
+                    INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE);
         }
     }
 

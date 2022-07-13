@@ -35,7 +35,7 @@ public class Blocks {
 
     public static class Iron extends Block {
         public Iron(int x, int y) {
-            super(x, y, new Items.IronBlock());
+            super(x, y, Items.IronBlock.class);
 
             setSolid(true);
             setMinable(true);
@@ -51,7 +51,7 @@ public class Blocks {
 
     public static class Gold extends Block {
         public Gold(int x, int y) {
-            super(x, y, new Items.GoldBlock());
+            super(x, y, Items.GoldBlock.class);
 
             setSolid(true);
             setMinable(true);
@@ -67,7 +67,7 @@ public class Blocks {
 
     public static class Wood extends Block {
         public Wood(int x, int y) {
-            super(x, y, new Items.Wood());
+            super(x, y, Items.Wood.class);
 
             setSolid(true);
             setMinable(true);
@@ -89,7 +89,7 @@ public class Blocks {
 
     public static class Stone extends Block {
         public Stone(int x, int y) {
-            super(x, y, new Items.Stone());
+            super(x, y, Items.Stone.class);
 
             setSolid(true);
             setMinable(true);

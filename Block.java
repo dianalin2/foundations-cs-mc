@@ -10,17 +10,17 @@ public abstract class Block {
     private boolean isSolid = true;
     private boolean isMinable = false;
     private int x, y;
-    private Item item;
+    private Class<? extends Item> itemClass;
 
-    public Block(int x, int y, Item item) {
+    public Block(int x, int y, Class<? extends Item> itemClass) {
         this.x = x;
         this.y = y;
-        this.item = item;
+        this.itemClass = itemClass;
     }
 
     public void mine(Player player) {
         if (isMinable()) {
-            if (item != null)
+            if (itemClass != null)
                 player.pickup(this);
 
             player.removeBlock(x, y);
@@ -43,12 +43,12 @@ public abstract class Block {
         isMinable = minable;
     }
 
-    public Item getItem() {
-        return item;
+    public Class<? extends Item> getItemClass() {
+        return itemClass;
     }
 
-    protected void setItem(Item item) {
-        this.item = item;
+    protected void setItemClass(Class<? extends Item> itemClass) {
+        this.itemClass = itemClass;
     }
 
     public int getX() {

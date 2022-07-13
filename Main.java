@@ -11,37 +11,39 @@ public class Main extends JPanel {
    private BufferedImage img;
    private Graphics2D g2d;
    private Block[][] map;
-    
+
    private boolean muted = false;
    private Clip bgClip;
 
    public Main() {
       img = new BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB);
       g2d = (Graphics2D) img.getGraphics();
-   
+
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-   
+
       setPreferredSize(new Dimension(800, 600));
       setBackground(Color.BLACK);
       setFocusable(true);
       requestFocus();
-   
+
       player = new Player(1, 1, this);
-        
+
       map = MapLoader.readMap("map.png");
-   
+
       bgClip = playAudio("audio/bg.wav", Clip.LOOP_CONTINUOUSLY);
-   
+
       // Set volume
       FloatControl gainControl = (FloatControl) bgClip.getControl(FloatControl.Type.MASTER_GAIN);
       gainControl.setValue(-25.0f);
-         
+
+      CraftingRecipe.loadCraftingRecipes();
+
       timer = new Timer(1000 / 60, new TimerListener());
       timer.start();
-        
+
       addKeyListener(new VolumeListener());
    }
-    
+
    public class VolumeListener extends KeyAdapter {
       public void keyPressed(KeyEvent e) {
          if (e.getKeyCode() == KeyEvent.VK_M) {
@@ -54,30 +56,30 @@ public class Main extends JPanel {
          }
       }
    }
-    
+
    public static Clip playAudio(String filename, int loop) {
       try {
          File f = new File(filename);
          AudioInputStream ais = AudioSystem.getAudioInputStream(f);
-      
+
          DataLine.Info lineInfo = new DataLine.Info(Clip.class, ais.getFormat());
          Clip clip = (Clip) AudioSystem.getLine(lineInfo);
          clip.open(ais);
-      
+
          // Play the Clip
          clip.start();
-         
+
          clip.loop(loop);
-      
+
          // Close relevant streams
          ais.close();
-         
+
          return clip;
-      
+
       } catch (Exception e) {
          System.out.println("Could not play background music");
       }
-      
+
       return null;
    }
 
@@ -106,20 +108,20 @@ public class Main extends JPanel {
                map[i][j].draw(g2d, renderOffset.x, renderOffset.y);
          }
       }
-   
+
       if (player.getSelectedBlock() != null) {
          g2d.setStroke(new BasicStroke(5));
          g2d.setColor(Color.WHITE);
          g2d.drawRect(player.getSelectedBlock().getX() * Block.TILE_SIZE - (int) renderOffset.x,
-                    player.getSelectedBlock().getY() * Block.TILE_SIZE - (int) renderOffset.y, Block.TILE_SIZE,
-                    Block.TILE_SIZE);
+               player.getSelectedBlock().getY() * Block.TILE_SIZE - (int) renderOffset.y, Block.TILE_SIZE,
+               Block.TILE_SIZE);
       }
    }
 
    private class TimerListener implements ActionListener {
       public void actionPerformed(ActionEvent e) {
          drawMap(g2d, getRenderOffset());
-      
+
          player.tick();
          player.draw(g2d, img.getWidth() / 2, img.getHeight() / 2);
          repaint();
@@ -133,18 +135,18 @@ public class Main extends JPanel {
 
    public DimensionsD getRenderOffset() {
       return new DimensionsD(player.getX() * Block.TILE_SIZE,
-                player.getY() * Block.TILE_SIZE);
+            player.getY() * Block.TILE_SIZE);
    }
 
    public static class DimensionsD {
       public final double x, y;
-   
+
       public DimensionsD(double x, double y) {
          this.x = x;
          this.y = y;
       }
    }
-    
+
    public boolean getMuted() {
       return muted;
    }

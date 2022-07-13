@@ -12,7 +12,7 @@ public class Items {
             player.removeItemFromInventory();
             player.placeBlock(x, y, new Blocks.Gold(x, y));
         }
-   
+
         @Override
         public void draw(Graphics2D g2d, int x, int y) {
             g2d.setColor(Color.YELLOW.brighter());
@@ -73,6 +73,43 @@ public class Items {
         public void use(int x, int y, Player player) {
             player.removeItemFromInventory();
             player.placeBlock(x, y, new Blocks.Iron(x, y));
+        }
+
+        @Override
+        public void draw(Graphics2D g2d, int x, int y) {
+            g2d.setColor(Color.GRAY.brighter());
+            g2d.fillRect(x, y, Player.INVENTORY_SLOT_SIZE, Player.INVENTORY_SLOT_SIZE);
+        }
+    }
+
+    public static class WoodenPlank extends Item {
+
+        public WoodenPlank() {
+            super("Wooden Plank");
+        }
+
+        @Override
+        public void use(int x, int y, Player player) {
+            player.removeItemFromInventory();
+            // player.placeBlock(x, y, new Blocks.WoodenPlank(x, y));
+        }
+
+        @Override
+        public void draw(Graphics2D g2d, int x, int y) {
+            g2d.setColor(Color.ORANGE.darker().darker());
+            g2d.fillRect(x, y, Player.INVENTORY_SLOT_SIZE, Player.INVENTORY_SLOT_SIZE);
+        }
+    }
+
+    public static class IronSword extends Item {
+
+        public IronSword() {
+            super("Iron Sword");
+        }
+
+        @Override
+        public void use(int x, int y, Player player) {
+            System.out.println("You used an Iron Sword");
         }
 
         @Override
