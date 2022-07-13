@@ -15,21 +15,9 @@ public class Blocks {
 
         public void draw(Graphics2D g2d, double xOffset, double yOffset, Block[][] map) {
 
-            // if (getX() - 1 >= 0 && map[getY()][getX() - 1] instanceof Water) {
-            // g2d.drawImage(TextureAtlas.overworldTextures.getTile(4, 7), getX() *
-            // TILE_SIZE - (int) xOffset,
-            // getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
-            // } else {
-            // if (getY() + 1 < map.length && map[getY() + 1][getX()] instanceof Grass) {
-            // g2d.drawImage(TextureAtlas.overworldTextures.getTile(4, 6), getX() *
-            // TILE_SIZE - (int) xOffset,
-            // getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
-            // } else {
             g2d.drawImage(TextureAtlas.overworldTextures.getTile(0, 0), getX() *
                     TILE_SIZE - (int) xOffset,
                     getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
-            // }
-            // }
         }
     }
 
