@@ -4,6 +4,32 @@ import java.text.DecimalFormat;
 
 public class Player {
 
+    public static final int INVENTORY_SLOT_SIZE = 30;
+
+    private double x, y;
+    private Direction direction = Direction.NONE;
+    public final static int WIDTH = 50, HEIGHT = 100;
+
+    private Main main;
+    private Block selectedBlock;
+
+    private boolean debug = false;
+
+    public static enum Direction {
+        UP, DOWN, LEFT, RIGHT, NONE
+    }
+
+    public Player(double x, double y, Main main) {
+        this.x = x;
+        this.y = y;
+        this.main = main;
+
+        main.addKeyListener(new PlayerKeyListener());
+        main.addMouseListener(new PlayerMouseListener());
+        main.addMouseWheelListener(new PlayerMouseWheelListener());
+        main.addMouseMotionListener(new PlayerMouseMotionListener());
+    }
+
     private Item[][] craftingGrid = new Item[CraftingRecipe.RECIPE_SIZE][CraftingRecipe.RECIPE_SIZE];
     private boolean isCrafting = false;
 
@@ -83,64 +109,23 @@ public class Player {
         return false;
     }
 
-    public static final int INVENTORY_SLOT_SIZE = 30;
-
-    private double x, y;
-    private Direction direction = Direction.NONE;
-    public final static int WIDTH = 50, HEIGHT = 100;
-
-    private Main main;
-    private Block selectedBlock;
-
-    private boolean debug = false;
-
-    public static enum Direction {
-        UP, DOWN, LEFT, RIGHT, NONE
-    }
-
-    public Player(double x, double y, Main main) {
-        this.x = x;
-        this.y = y;
-        this.main = main;
-
-        main.addKeyListener(new PlayerKeyListener());
-        main.addMouseListener(new PlayerMouseListener());
-        main.addMouseWheelListener(new PlayerMouseWheelListener());
-        main.addMouseMotionListener(new PlayerMouseMotionListener());
-    }
-
     public void move(Direction direction) {
         switch (direction) {
             case UP:
                 y -= 0.1;
-                // if (main.getBlockAt((int) x, (int) (y + 0.5)).isSolid()) {
-                // y += 0.1;
-                // }
                 break;
             case DOWN:
                 y += 0.1;
-                // if (main.getBlockAt((int) x, (int) (y - 0.5)).isSolid()) {
-                // y -= 0.1;
-                // }
                 break;
             case LEFT:
                 x -= 0.1;
-                // if (main.getBlockAt((int) (x + 0.5), (int) y).isSolid()) {
-                // x += 0.1;
-                // }
                 break;
             case RIGHT:
                 x += 0.1;
-                // if (main.getBlockAt((int) (x - 0.5), (int) y).isSolid()) {
-                // x -= 0.1;
-                // }
                 break;
             default:
                 break;
         }
-
-        // System.out.println("x: " + x + " y: " + y);
-        // System.out.println(main.getBlockAt((int) x, (int) y).getClass());
     }
 
     public class PlayerMouseWheelListener implements MouseWheelListener {
