@@ -14,8 +14,7 @@ A small game demo for TJHSST's Foundations of Computer Science course during the
 
 ## Known Bugs
 
-* Sometimes block selection doesn't work properly.
-* Bounding boxes for crafting don't properly detect the edges properly.
+* Currently none
 
 ## Additional Notes
 
