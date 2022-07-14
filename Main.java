@@ -118,10 +118,10 @@ public class Main extends JPanel {
       g2d.fillRect(0, 0, img.getWidth(), img.getHeight());
 
       // Calculate seen tiles
-      int startX = (int) Math.floor(renderOffset.x / Block.TILE_SIZE) - 1;
-      int startY = (int) Math.floor(renderOffset.y / Block.TILE_SIZE) - 1;
-      int endX = (int) Math.ceil((renderOffset.x + FRAME_WIDTH) / Block.TILE_SIZE) + 2;
-      int endY = (int) Math.ceil((renderOffset.y + FRAME_HEIGHT) / Block.TILE_SIZE) + 3;
+      int startX = (int) Math.floor((renderOffset.x - FRAME_WIDTH / 2) / Block.TILE_SIZE) - 1;
+      int startY = (int) Math.floor((renderOffset.y - FRAME_HEIGHT / 2) / Block.TILE_SIZE) - 1;
+      int endX = (int) Math.ceil((renderOffset.x + FRAME_WIDTH / 2) / Block.TILE_SIZE) + 2;
+      int endY = (int) Math.ceil((renderOffset.y + FRAME_HEIGHT / 2) / Block.TILE_SIZE) + 3;
 
       startX = clamp(startX, 0, map[0].length);
       startY = clamp(startY, 0, map.length);
@@ -138,8 +138,9 @@ public class Main extends JPanel {
       if (player.getSelectedBlock() != null) {
          g2d.setStroke(dashed);
          g2d.setColor(Color.WHITE);
-         g2d.drawRect(player.getSelectedBlock().getX() * Block.TILE_SIZE - (int) renderOffset.x,
-               player.getSelectedBlock().getY() * Block.TILE_SIZE - (int) renderOffset.y, Block.TILE_SIZE,
+         g2d.drawRect((int) (player.getSelectedBlock().getX() * Block.TILE_SIZE - renderOffset.x + FRAME_WIDTH / 2),
+               (int) (player.getSelectedBlock().getY() * Block.TILE_SIZE - renderOffset.y + FRAME_HEIGHT / 2),
+               Block.TILE_SIZE,
                Block.TILE_SIZE);
       }
    }
@@ -157,12 +158,13 @@ public class Main extends JPanel {
    public void paintComponent(Graphics g) {
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
+      // g.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), null);
    }
 
    public DimensionsD getRenderOffset() {
       return new DimensionsD(
-            clamp(player.getX() * Block.TILE_SIZE, FRAME_WIDTH / 2, map[0].length * Block.TILE_SIZE - FRAME_WIDTH),
-            clamp(player.getY() * Block.TILE_SIZE, FRAME_HEIGHT / 2, map.length * Block.TILE_SIZE - FRAME_HEIGHT));
+            clamp(player.getX() * Block.TILE_SIZE, FRAME_WIDTH / 2, map[0].length * Block.TILE_SIZE - FRAME_WIDTH / 2),
+            clamp(player.getY() * Block.TILE_SIZE, FRAME_HEIGHT / 2, map.length * Block.TILE_SIZE - FRAME_HEIGHT / 2));
    }
 
    public static class DimensionsD {
@@ -178,12 +180,16 @@ public class Main extends JPanel {
       return muted;
    }
 
+   public DimensionsD getImgPanelSizeRatio() {
+      return new DimensionsD((double) img.getWidth() / getWidth(), (double) img.getHeight() / getHeight());
+   }
+
    public static void main(String[] args) {
       JFrame frame = new JFrame("2Inventory");
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      frame.setSize(850, 600);
+      frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
       frame.setLocationRelativeTo(null);
-      frame.setResizable(false);
+      // frame.setResizable(false);
       frame.add(new Main());
       frame.setVisible(true);
    }

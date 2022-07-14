@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public abstract class Block {
     public static int TILE_SIZE = 50;
@@ -64,12 +65,14 @@ public abstract class Block {
                 && player.getY() + Player.HEIGHT >= getY() && player.getY() <= getY() + TILE_SIZE;
     }
 
-    protected void fillTile(Graphics2D g2d, double xOffset, double yOffset, Color c) {
-        fillTile(g2d, getX(), getY(), xOffset, yOffset, c);
+    protected static void drawTile(Graphics2D g2d, BufferedImage tile, int x, int y, double xOffset,
+            double yOffset) {
+        g2d.drawImage(tile, (int) (x * TILE_SIZE - xOffset + Main.FRAME_WIDTH / 2),
+                (int) (y * TILE_SIZE - yOffset + Main.FRAME_HEIGHT / 2),
+                TILE_SIZE, TILE_SIZE, null);
     }
 
-    protected void fillTile(Graphics2D g2d, int x, int y, double xOffset, double yOffset, Color c) {
-        g2d.setColor(c);
-        g2d.fillRect((x * TILE_SIZE - (int) xOffset), (y * TILE_SIZE - (int) yOffset), TILE_SIZE, TILE_SIZE);
+    protected void drawTile(Graphics2D g2d, BufferedImage tile, double xOffset, double yOffset) {
+        drawTile(g2d, tile, getX(), getY(), xOffset, yOffset);
     }
 }

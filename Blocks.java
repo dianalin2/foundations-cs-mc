@@ -14,10 +14,7 @@ public class Blocks {
         }
 
         public void draw(Graphics2D g2d, double xOffset, double yOffset, Block[][] map) {
-
-            g2d.drawImage(TextureAtlas.overworldTextures.getTile(0, 0), getX() *
-                    TILE_SIZE - (int) xOffset,
-                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
+            drawTile(g2d, TextureAtlas.overworldTextures.getTile(0, 0), xOffset, yOffset);
         }
     }
 
@@ -47,13 +44,9 @@ public class Blocks {
             }
 
             if (animated)
-                g2d.drawImage(TextureAtlas.overworldTextures.getTile(3 + frame % 3, 3 + frame / 3), getX() *
-                        TILE_SIZE - (int) xOffset,
-                        getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
+                drawTile(g2d, TextureAtlas.overworldTextures.getTile(3 + frame % 3, 3 + frame / 3), xOffset, yOffset);
             else
-                g2d.drawImage(TextureAtlas.overworldTextures.getTile(3, 7), getX() *
-                        TILE_SIZE - (int) xOffset,
-                        getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
+                drawTile(g2d, TextureAtlas.overworldTextures.getTile(3, 7), xOffset, yOffset);
         }
     }
 
@@ -69,10 +62,8 @@ public class Blocks {
         }
 
         public void draw(Graphics2D g2d, double xOffset, double yOffset, Block[][] map) {
-            g2d.drawImage(TextureAtlas.overworldTextures.getTile(0, 0), getX() * TILE_SIZE - (int) xOffset,
-                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
-            g2d.drawImage(TextureAtlas.objectTextures.getTile(16, 1), getX() * TILE_SIZE - (int) xOffset,
-                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
+            drawTile(g2d, TextureAtlas.overworldTextures.getTile(0, 0), xOffset, yOffset);
+            drawTile(g2d, TextureAtlas.objectTextures.getTile(16, 1), xOffset, yOffset);
         }
     }
 
@@ -88,10 +79,8 @@ public class Blocks {
         }
 
         public void draw(Graphics2D g2d, double xOffset, double yOffset, Block[][] map) {
-            g2d.drawImage(TextureAtlas.overworldTextures.getTile(0, 0), getX() * TILE_SIZE - (int) xOffset,
-                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
-            g2d.drawImage(TextureAtlas.objectTextures.getTile(0, 5), getX() * TILE_SIZE - (int) xOffset,
-                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
+            drawTile(g2d, TextureAtlas.overworldTextures.getTile(0, 0), xOffset, yOffset);
+            drawTile(g2d, TextureAtlas.objectTextures.getTile(0, 5), xOffset, yOffset);
         }
     }
 
@@ -107,10 +96,8 @@ public class Blocks {
         }
 
         public void draw(Graphics2D g2d, double xOffset, double yOffset, Block[][] map) {
-            g2d.drawImage(TextureAtlas.overworldTextures.getTile(0, 0), getX() * TILE_SIZE - (int) xOffset,
-                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
-            g2d.drawImage(TextureAtlas.overworldTextures.getTile(2, 14), getX() * TILE_SIZE - (int) xOffset,
-                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
+            drawTile(g2d, TextureAtlas.overworldTextures.getTile(0, 0), xOffset, yOffset);
+            drawTile(g2d, TextureAtlas.overworldTextures.getTile(2, 14), xOffset, yOffset);
         }
     }
 
@@ -128,10 +115,8 @@ public class Blocks {
         }
 
         public void draw(Graphics2D g2d, double xOffset, double yOffset, Block[][] map) {
-            g2d.drawImage(TextureAtlas.overworldTextures.getTile(0, 0), getX() * TILE_SIZE - (int) xOffset,
-                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
-            g2d.drawImage(TextureAtlas.caveTextures.getTile(5 + texture, 4), getX() * TILE_SIZE - (int) xOffset,
-                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
+            drawTile(g2d, TextureAtlas.overworldTextures.getTile(0, 0), xOffset, yOffset);
+            drawTile(g2d, TextureAtlas.caveTextures.getTile(5 + texture, 4), xOffset, yOffset);
         }
     }
 
@@ -147,8 +132,7 @@ public class Blocks {
         }
 
         public void draw(Graphics2D g2d, double xOffset, double yOffset, Block[][] map) {
-            g2d.drawImage(TextureAtlas.innerTextures.getTile(0, 1), getX() * TILE_SIZE - (int) xOffset,
-                    getY() * TILE_SIZE - (int) yOffset, TILE_SIZE, TILE_SIZE, null);
+            drawTile(g2d, TextureAtlas.innerTextures.getTile(0, 1), xOffset, yOffset);
         }
     }
 }

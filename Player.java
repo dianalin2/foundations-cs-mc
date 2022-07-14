@@ -113,19 +113,34 @@ public class Player {
         switch (direction) {
             case UP:
                 y -= 0.1;
+                // if (main.getBlockAt((int) x, (int) (y + 0.5)).isSolid()) {
+                // y += 0.1;
+                // }
                 break;
             case DOWN:
                 y += 0.1;
+                // if (main.getBlockAt((int) x, (int) (y - 0.5)).isSolid()) {
+                // y -= 0.1;
+                // }
                 break;
             case LEFT:
                 x -= 0.1;
+                // if (main.getBlockAt((int) (x + 0.5), (int) y).isSolid()) {
+                // x += 0.1;
+                // }
                 break;
             case RIGHT:
                 x += 0.1;
+                // if (main.getBlockAt((int) (x - 0.5), (int) y).isSolid()) {
+                // x -= 0.1;
+                // }
                 break;
             default:
                 break;
         }
+
+        // System.out.println("x: " + x + " y: " + y);
+        // System.out.println(main.getBlockAt((int) x, (int) y).getClass());
     }
 
     public class PlayerMouseWheelListener implements MouseWheelListener {
@@ -236,8 +251,10 @@ public class Player {
     private void setSelectedBlock(int absX, int absY) {
         lastAbsoluteX = absX;
         lastAbsoluteY = absY;
-        int xTile = (int) ((absX + main.getRenderOffset().x) / Block.TILE_SIZE);
-        int yTile = (int) Math.round((absY + main.getRenderOffset().y) / Block.TILE_SIZE);
+        int xTile = (int) ((absX + main.getRenderOffset().x - Main.FRAME_WIDTH / 2) /
+                Block.TILE_SIZE);
+        int yTile = (int) ((absY + main.getRenderOffset().y - Main.FRAME_HEIGHT / 2)
+                / Block.TILE_SIZE);
         if (xTile >= 0 && xTile < main.getMap()[0].length && yTile >= 0 && yTile < main.getMap().length) {
             selectedBlock = main.getBlockAt(xTile, yTile);
         }
@@ -245,7 +262,9 @@ public class Player {
 
     public class PlayerMouseMotionListener extends MouseMotionAdapter {
         public void mouseMoved(MouseEvent e) {
-            setSelectedBlock(e.getX(), e.getY());
+            int absX = (int) (e.getX() * main.getImgPanelSizeRatio().x);
+            int absY = (int) (e.getY() * main.getImgPanelSizeRatio().y);
+            setSelectedBlock(absX, absY);
         }
     }
 
@@ -255,8 +274,10 @@ public class Player {
     public class PlayerMouseListener extends MouseAdapter {
 
         public void mousePressed(MouseEvent e) {
+            int absX = (int) (e.getX() * main.getImgPanelSizeRatio().x);
+            int absY = (int) (e.getY() * main.getImgPanelSizeRatio().y);
             if (!isCrafting)
-                setSelectedBlock(e.getX(), e.getY());
+                setSelectedBlock(absX, absY);
 
             if (e.getButton() == MouseEvent.BUTTON3) {
                 if (!isCrafting && inventory.getSlot(selectedSlot) != null) {
@@ -264,12 +285,12 @@ public class Player {
                 }
             } else if (e.getButton() == MouseEvent.BUTTON1) {
                 if (isCrafting) {
-                    int slot = getSlotFromMouse(e.getX(), e.getY());
+                    int slot = getSlotFromMouse(absX, absY);
                     System.out.println("Slot: " + slot);
                     if (slot != -1) {
                         inventorySlotMouseSelected = slot;
                     } else {
-                        Dimension cSlot = getCraftingSlotFromMouse(e.getX(), e.getY());
+                        Dimension cSlot = getCraftingSlotFromMouse(absX, absY);
                         System.out.println("Crafting slot: " + cSlot);
                         if (cSlot != null) {
                             craftingSlotMouseSelected = cSlot;
@@ -284,7 +305,10 @@ public class Player {
         public void mouseReleased(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
                 if (isCrafting) {
-                    int slot = getSlotFromMouse(e.getX(), e.getY());
+                    int absX = (int) (e.getX() * main.getImgPanelSizeRatio().x);
+                    int absY = (int) (e.getY() * main.getImgPanelSizeRatio().y);
+
+                    int slot = getSlotFromMouse(absX, absY);
                     System.out.println("slot: " + slot);
                     if (craftingSlotMouseSelected != null && slot != -1) {
                         swapInventoryCraftingGrid(craftingSlotMouseSelected.height, craftingSlotMouseSelected.width,
@@ -294,7 +318,7 @@ public class Player {
                         inventory.swapSlots(inventorySlotMouseSelected, slot);
                         clearCraftingMoveSelection();
                     } else {
-                        Dimension cSlot = getCraftingSlotFromMouse(e.getX(), e.getY());
+                        Dimension cSlot = getCraftingSlotFromMouse(absX, absY);
                         System.out.println("Crafting slot: " + cSlot);
                         System.out.println("Inventory slot: " + inventorySlotMouseSelected);
                         if (inventorySlotMouseSelected != -1 && cSlot != null) {
@@ -308,7 +332,7 @@ public class Player {
                         }
                     }
 
-                    boolean hover = getMouseIsHoveringCraftingResult(e.getX(), e.getY());
+                    boolean hover = getMouseIsHoveringCraftingResult(absX, absY);
                     System.out.println("hover: " + hover);
                     if (hover) {
                         CraftingRecipe recipe = CraftingRecipe.getMatch(craftingGrid);
@@ -395,6 +419,8 @@ public class Player {
     public void drawPlayer(Graphics2D g2d, int xOffset, int yOffset) {
         int x = (int) (this.x * Block.TILE_SIZE) - xOffset + Main.FRAME_WIDTH / 2;
         int y = (int) (this.y * Block.TILE_SIZE) - yOffset + Main.FRAME_HEIGHT / 2;
+
+        System.out.println("rendered player at: " + x + " " + y);
 
         int tileX = direction == Direction.NONE ? 0 : tick / 8 % 4;
         int tileY;
@@ -506,6 +532,10 @@ public class Player {
         g2d.drawString("Direction: " + direction, 10, 54);
         g2d.drawString("Selected Block: " + selectedBlock, 10, 71);
         g2d.drawString("Selected Slot: " + selectedSlot, 10, 88);
+    }
+
+    public boolean inTile(int x, int y) {
+        return x >= this.x && x <= this.x + WIDTH && y >= this.y && y <= this.y + HEIGHT;
     }
 
     public double getX() {
