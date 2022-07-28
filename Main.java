@@ -80,7 +80,7 @@ public class Main extends JPanel {
          return clip;
 
       } catch (Exception e) {
-         System.out.println("Could not play background music");
+         System.err.println("Could not play background music");
       }
 
       return null;
@@ -91,7 +91,10 @@ public class Main extends JPanel {
    }
 
    public Block getBlockAt(int x, int y) {
-      return map[y][x];
+      if (y >= 0 && y < map.length && x >= 0 && x < map[0].length)
+         return map[y][x];
+
+      return null;
    }
 
    public void removeBlock(int x, int y) {
@@ -102,11 +105,11 @@ public class Main extends JPanel {
       map[y][x] = block;
    }
 
-   private int clamp(int value, int min, int max) {
+   private static int clamp(int value, int min, int max) {
       return Math.max(min, Math.min(max, value));
    }
 
-   private double clamp(double value, double min, double max) {
+   private static double clamp(double value, double min, double max) {
       return Math.max(min, Math.min(max, value));
    }
 
