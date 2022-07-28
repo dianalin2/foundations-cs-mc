@@ -109,18 +109,34 @@ public class Player {
         return false;
     }
 
+    public Block getTileAt() {
+        return getTileAt(0, 0);
+    }
+
+    public Block getTileAt(double offsetX, double offsetY) {
+        return main.getBlockAt((int) (x + offsetX + 0.5), (int) (y + offsetY + 0.5));
+    }
+
     public void move(Direction direction) {
         switch (direction) {
             case UP:
+                if (getTileAt(0, -0.1).isSolid() || getTileAt(0.0 * WIDTH / Block.TILE_SIZE, -0.1).isSolid())
+                    break;
                 y -= 0.1;
                 break;
             case DOWN:
+                if (getTileAt(0, 0.1).isSolid() || getTileAt(0.0 * WIDTH / Block.TILE_SIZE, 0.1).isSolid())
+                    break;
                 y += 0.1;
                 break;
             case LEFT:
+                if (getTileAt(-0.1, 0).isSolid() || getTileAt(-0.1, 0.0 * HEIGHT / Block.TILE_SIZE).isSolid())
+                    break;
                 x -= 0.1;
                 break;
             case RIGHT:
+                if (getTileAt(0.1, 0).isSolid() || getTileAt(0.1, 0.0 * HEIGHT / Block.TILE_SIZE).isSolid())
+                    break;
                 x += 0.1;
                 break;
             default:
